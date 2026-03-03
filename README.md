@@ -1,73 +1,137 @@
-# React + TypeScript + Vite
+# Agriculture AI Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An intelligent agricultural advisory platform powered by AI that provides personalized farming recommendations, crop insights, and sustainable farming practices.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🤖 **AI-Powered Insights** - Advanced machine learning algorithms analyze land data for personalized crop recommendations
+- 📈 **Yield Optimization** - Data-driven recommendations to maximize harvest while minimizing costs
+- 📍 **Location-Based Analysis** - Region-specific farming strategies tailored to your climate and soil conditions
+- 💾 **History Management** - Track all your consultations and starred recommendations
+- 🎨 **Modern UI** - Clean, responsive interface built with React and Tailwind CSS
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **Animation**: Motion (Framer Motion)
+- **Icons**: Lucide React
+- **Linting**: ESLint with TypeScript support
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── main.tsx              # Application entry point
+├── app/
+│   ├── App.tsx          # Main application component
+│   ├── routes.tsx       # Route definitions
+│   ├── components/      # Reusable UI components
+│   │   ├── ui/         # Base UI components (Input, Tabs, etc.)
+│   │   ├── ai-response-card.tsx
+│   │   ├── ask-ai-card.tsx
+│   │   ├── history-panel.tsx
+│   │   └── map-location-card.tsx
+│   └── pages/           # Page components
+│       ├── about.tsx    # About page
+│       ├── history.tsx  # History/consultations page
+│       └── ...
+└── styles/
+    ├── index.css
+    ├── tailwind.css
+    ├── theme.css
+    └── fonts.css
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js 16.x or higher
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd agriculture-ai-assistant
 ```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Start the development server
+```bash
+npm run dev
+```
+
+The application will open at `http://localhost:5173`
+
+## Available Scripts
+
+- `npm run dev` - Start development server with HMR
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint for code quality checks
+
+## Configuration Files
+
+- **vite.config.ts** - Vite build configuration
+- **tailwind.config.js** - Tailwind CSS customization
+- **postcss.config.js** - PostCSS configuration
+- **tsconfig.json** - TypeScript configuration
+- **eslint.config.js** - ESLint rules and configuration
+
+## Key Components
+
+### UI Components
+- **Input** - Customizable input field with styling
+- **Tabs** - Tab navigation with support for multiple views
+- **NavigationMenu** - Accessible navigation menu
+- **Command** - Command palette/search component
+
+### Feature Components
+- **AIResponseCard** - Display AI recommendations
+- **AskAICard** - Interface for asking questions
+- **HistoryPanel** - View past consultations
+- **MapLocationCard** - Display location-based information
+
+### Pages
+- **About** - Information about the platform, team, and features
+- **History** - User consultation history and starred recommendations
+
+## Styling
+
+The project uses:
+- **Tailwind CSS** for utility-first styling
+- **Custom theme colors** in `theme.css`
+- **Custom fonts** in `fonts.css`
+- **Dark mode support** via CSS variables
+
+## Contributing
+
+When contributing to this project:
+1. Follow the existing code style
+2. Use TypeScript for all new code
+3. Ensure ESLint passes: `npm run lint`
+4. Keep components focused and reusable
+5. Add proper TypeScript types
+
+## Browser Support
+
+- Chrome/Edge (latest)
+- Firefox (latest)
+- Safari (latest)
+
+## License
+
+[Add your license here]
+
+## Contact & Support
+
+[Add contact information or support channels here]
