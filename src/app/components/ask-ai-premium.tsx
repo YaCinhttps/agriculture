@@ -1,9 +1,21 @@
-import { Mic, ArrowRight } from 'lucide-react';
+import { Mic, ArrowRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-export function AskAIPremium() {
+interface AskAIPremiumProps {
+  onAsk?: (question: string) => void;
+  loading?: boolean;
+  locationSelected?: boolean;
+}
+
+export function AskAIPremium({ onAsk, loading, locationSelected }: AskAIPremiumProps) {
   const [question, setQuestion] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+
+  const handleSubmit = () => {
+    if (question.trim() && onAsk) {
+      onAsk(question.trim());
+    }
+  };
 
   return (
     <div className="group">
@@ -37,11 +49,22 @@ export function AskAIPremium() {
             </button>
 
             <button
-              disabled={!question.trim()}
+              onClick={handleSubmit}
+              disabled={!question.trim() || loading || !locationSelected}
               className="group/btn px-6 py-3 bg-gradient-to-r from-[#2e7d32] to-[#1b5e20] text-white rounded-xl hover:shadow-xl hover:shadow-green-500/30 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+              title={!locationSelected ? 'Select a location on the map first' : ''}
             >
-              <span className="font-medium">Get Answer</span>
-              <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="font-medium">Analyzing...</span>
+                </>
+              ) : (
+                <>
+                  <span className="font-medium">Get Answer</span>
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </div>
         </div>

@@ -1,60 +1,73 @@
-import { MapPin, Check } from 'lucide-react';
-import { useState } from 'react';
+import { Check, Loader2 } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
+const defaultCenter = { lat: 33.5731, lng: -7.5898 };
 
 export function MapLocationCard() {
-  const [selectedLocation, setSelectedLocation] = useState({ lat: 33.5731, lng: -7.5898 });
-  const [pinDropped, setPinDropped] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
 
-  const handleMapClick = () => {
-    // Simulate dropping a pin
-    setPinDropped(true);
-    setSelectedLocation({ lat: 33.5731 + Math.random() * 0.1, lng: -7.5898 + Math.random() * 0.1 });
-  };
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+  });
+
+  const handleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
+    if (e.latLng) {
+      setSelectedLocation({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+    }
+  }, []);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div className="p-6">
         <h2 className="font-semibold text-gray-900 mb-4">Select Your Land</h2>
         
-        {/* Mock Map Area */}
-        <div
-          onClick={handleMapClick}
-          className="relative w-full h-80 bg-gradient-to-br from-[#e8f5e9] to-[#c8e6c9] rounded-lg cursor-pointer overflow-hidden"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(0deg, rgba(46,125,50,0.05) 0px, rgba(46,125,50,0.05) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, rgba(46,125,50,0.05) 0px, rgba(46,125,50,0.05) 1px, transparent 1px, transparent 20px)'
-          }}
-        >
-          {/* Mock map grid */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              {!pinDropped ? (
-                <>
-                  <MapPin className="w-12 h-12 text-[#2e7d32] mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Click to drop a pin</p>
-                </>
-              ) : (
-                <div className="bg-white rounded-lg shadow-lg p-4 animate-bounce-once">
-                  <MapPin className="w-8 h-8 text-red-500 mx-auto mb-2 fill-red-500" />
-                  <p className="text-xs text-gray-600">Location selected</p>
-                </div>
-              )}
+        <div className="relative w-full h-80 rounded-lg overflow-hidden">
+          {loadError && (
+            <div className="flex items-center justify-center h-full bg-red-50 text-red-600 text-sm">
+              Failed to load Google Maps. Check your API key.
             </div>
-          </div>
-
-          {/* Mock roads/paths */}
-          <div className="absolute top-20 left-0 right-0 h-0.5 bg-gray-400 opacity-30"></div>
-          <div className="absolute top-0 bottom-0 left-32 w-0.5 bg-gray-400 opacity-30"></div>
-          <div className="absolute top-0 bottom-0 right-32 w-0.5 bg-gray-400 opacity-30"></div>
-          <div className="absolute bottom-20 left-0 right-0 h-0.5 bg-gray-400 opacity-30"></div>
+          )}
+          {!isLoaded && !loadError && (
+            <div className="flex items-center justify-center h-full bg-gray-50">
+              <Loader2 className="w-8 h-8 animate-spin text-[#2e7d32]" />
+            </div>
+          )}
+          {isLoaded && !loadError && (
+            <GoogleMap
+              mapContainerStyle={mapContainerStyle}
+              center={selectedLocation || defaultCenter}
+              zoom={10}
+              onClick={handleMapClick}
+              options={{
+                streetViewControl: false,
+                mapTypeControl: true,
+                mapTypeId: 'hybrid',
+              }}
+            >
+              {selectedLocation && (
+                <Marker position={selectedLocation} />
+              )}
+            </GoogleMap>
+          )}
         </div>
 
-        {pinDropped && (
+        {selectedLocation && (
           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <p className="text-sm text-gray-600 mb-1">Coordinates</p>
-                <p className="font-mono text-sm text-gray-900">{selectedLocation.lat.toFixed(4)}°N, {Math.abs(selectedLocation.lng).toFixed(4)}°W</p>
-                <p className="text-sm text-[#2e7d32] mt-2">📍 Casablanca Region, Morocco</p>
+                <p className="font-mono text-sm text-gray-900">
+                  {selectedLocation.lat.toFixed(6)}°{selectedLocation.lat >= 0 ? 'N' : 'S'},{' '}
+                  {Math.abs(selectedLocation.lng).toFixed(6)}°{selectedLocation.lng >= 0 ? 'E' : 'W'}
+                </p>
               </div>
               <button className="px-4 py-2 bg-[#2e7d32] text-white rounded-lg hover:bg-[#1b5e20] transition-colors flex items-center gap-2 whitespace-nowrap">
                 <Check className="w-4 h-4" />

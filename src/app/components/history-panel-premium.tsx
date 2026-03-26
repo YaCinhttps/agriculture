@@ -13,7 +13,7 @@ export function HistoryPanelPremium() {
     <div className="w-80 bg-white/50 backdrop-blur-xl border-r border-gray-100 flex flex-col h-full">
       <div className="p-6 border-b border-gray-100">
         <h2 className="text-lg font-semibold text-gray-900 mb-1">History</h2>
-        <p className="text-xs text-gray-500">Your recent consultations</p>
+        <p className="text-xs text-gray-500">Your Recent Consultations</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">

@@ -1,12 +1,72 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { HistoryPanelPremium } from '../components/history-panel-premium';
 import { MapLocationPremium } from '../components/map-location-premium';
 import { AskAIPremium } from '../components/ask-ai-premium';
 import { AIResponsePremium } from '../components/ai-response-premium';
 import { Menu, X, Info } from 'lucide-react';
 
+export interface Recommendation {
+  success: boolean;
+  location: string;
+  soil_features: {
+    soil_type: string;
+    nitrogen: number;
+    potassium: number;
+    phosphorous: number;
+  };
+  weather_features: {
+    temperature: number;
+    humidity: number;
+    moisture: number;
+  };
+  recommended_crop: string;
+  recommended_fertilizer: string;
+  explanation: string;
+}
+
+const N8N_WEBHOOK_URL = 'http://localhost:5678/webhook/agro-predict';
+
 export default function Dashboard() {
   const [showHistory, setShowHistory] = useState(false);
+  const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmedLocation, setConfirmedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const aiResponseRef = useRef<HTMLDivElement>(null);
+
+  const handleConfirmLocation = (lat: number, lng: number) => {
+    setConfirmedLocation({ lat, lng });
+  };
+
+  const handleAskQuestion = async (question: string) => {
+    if (!confirmedLocation) return;
+    setLoading(true);
+    setTimeout(() => {
+      aiResponseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 500);
+    setError(null);
+    setRecommendation(null);
+    try {
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          latitude: confirmedLocation.lat,
+          longitude: confirmedLocation.lng,
+          farmer_question: question,
+        }),
+      });
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      const text = await response.text();
+      if (!text) throw new Error('Empty response from server — check that n8n workflow and FastAPI are running');
+      const data: Recommendation = JSON.parse(text);
+      setRecommendation(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to get recommendation');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex">
@@ -40,17 +100,21 @@ export default function Dashboard() {
         <div className="max-w-5xl mx-auto px-6 py-12 space-y-16">
           {/* Map Location Section */}
           <div className="animate-fade-in">
-            <MapLocationPremium />
+            <MapLocationPremium onConfirm={handleConfirmLocation} loading={loading} />
           </div>
 
           {/* Ask AI Section */}
           <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-            <AskAIPremium />
+            <AskAIPremium
+              onAsk={handleAskQuestion}
+              loading={loading}
+              locationSelected={!!confirmedLocation}
+            />
           </div>
 
           {/* AI Response Section */}
-          <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
-            <AIResponsePremium />
+          <div ref={aiResponseRef} className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+            <AIResponsePremium data={recommendation} loading={loading} error={error} />
           </div>
 
           {/* Footer */}
